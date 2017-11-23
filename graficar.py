@@ -3,6 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+from scipy.interpolate import spline
 
 # Abrimos el archivo de la comunicacón
 archivo = open("comunicacion.txt", "r")
@@ -53,11 +54,17 @@ elif tipo == 3:
 		terminos[0], terminos[1], terminos[2], terminos[3]),
 		fontsize=14, fontweight='bold')
 
-# Graficamos, formateamos y guardamos con nombre de la fecha y hora
-plt.plot(x, y)
+# sx y sy es la función ya suavizada (para mejor apariencia)
+sx = np.linspace(x.min(), x.max(), 300)
+sy = spline(x, y, sx)
+# Creamos la gráfica
+plt.plot(sx, sy)
+# Agregamos ejes y cuadrícula
 plt.grid()
+plt.axhline(0, color='black')
+plt.axvline(0, color='black')
 
-# Ruta donde se va a guardar el archivo
+# Ruta donde se va a guardar el archivo con fecha y hora
 nombre = "graficas/{0}-{1}-{2} {3}:{4}:{5}.png".format(
 	time.strftime('%Y'),
 	time.strftime('%m'),
@@ -67,5 +74,5 @@ nombre = "graficas/{0}-{1}-{2} {3}:{4}:{5}.png".format(
 	time.strftime('%S'))
 
 # Guardamos y avisamos de ello
-plt.savefig(nombre)
+plt.savefig(nombre, bbox_inches="tight")
 print("Tú gráfica se ha guardado en \"{0}\"".format(nombre))
