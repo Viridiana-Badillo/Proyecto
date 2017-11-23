@@ -65,7 +65,6 @@ elif tipo == 3:
 tck = splrep(x, y)
 sx = np.linspace(x.min(), x.max(), num=300)
 sy = splev(sx, tck)
-print(sy)
 # Creamos la gráfica
 plt.plot(sx, sy)
 # Agregamos ejes y cuadrícula
