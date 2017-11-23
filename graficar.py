@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-from scipy.interpolate import spline
+from scipy.interpolate import splrep, splev
 
 # Abrimos el archivo de la comunicacón
 archivo = open("comunicacion.txt", "r")
@@ -27,10 +27,17 @@ tipo = len(terminos) - 1
 # Leemos el rango para graficar
 print("Dame el rango para graficar [x1, x2]")
 x1 = float(input(" x1: "))
-x2 = float(input(" x2: "))
+x2 = float(input(" x2: ")) + 1
 
 # Rango de la función
-x = np.arange(x1, x2)
+# Lo divide en 300 puntos para graficar mejor, y ordena el intervalo de menor
+# a mayor, pues si x1 es mayor a x2 entonces el intervalo sería [x2, x1] y no
+# [x1, x2]
+step = abs(x1 - x2) / 300
+if x1 < x2:
+	x = np.arange(x1, x2, step)
+else:
+	x = np.arange(x2, x1, step)
 
 # Damos el formato para poder graficar 
 fig = plt.figure()
@@ -54,15 +61,15 @@ elif tipo == 3:
 		terminos[0], terminos[1], terminos[2], terminos[3]),
 		fontsize=14, fontweight='bold')
 
-# sx y sy es la función ya suavizada (para mejor apariencia)
-sx = np.linspace(x.min(), x.max(), 300)
-sy = spline(x, y, sx)
+# Suavizamos la función
+tck = splrep(x, y)
+sx = np.linspace(x.min(), x.max(), num=300)
+sy = splev(sx, tck)
+print(sy)
 # Creamos la gráfica
 plt.plot(sx, sy)
 # Agregamos ejes y cuadrícula
 plt.grid()
-plt.axhline(0, color='black')
-plt.axvline(0, color='black')
 
 # Ruta donde se va a guardar el archivo con fecha y hora
 nombre = "graficas/{0}-{1}-{2} {3}:{4}:{5}.png".format(
@@ -74,5 +81,5 @@ nombre = "graficas/{0}-{1}-{2} {3}:{4}:{5}.png".format(
 	time.strftime('%S'))
 
 # Guardamos y avisamos de ello
-plt.savefig(nombre, bbox_inches="tight")
+plt.savefig(nombre)
 print("Tú gráfica se ha guardado en \"{0}\"".format(nombre))
